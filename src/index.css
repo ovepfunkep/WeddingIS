@@ -1,0 +1,75 @@
+@import "tailwindcss";
+
+@theme {
+  --color-wedding-olive: #8B9467;
+  --color-wedding-green: #4A5D4E;
+  --color-wedding-darkGreen: #2D3A30;
+  --color-wedding-chocolate: #5D4037;
+  --color-wedding-brown: #8D6E63;
+  --color-wedding-beige: #F5F5DC;
+  --color-wedding-silver: #C0C0C0;
+  --color-wedding-pink: #DB7093;
+
+  --font-serif: "Cormorant Garamond", serif;
+  --font-sans: "Inter", sans-serif;
+  --font-infant: "Cormorant Infant", serif;
+  --font-script: "Meow Script", cursive;
+}
+
+:root {
+  background-color: #f6f4f1;
+  color: #514e4e;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+h1, h2, h3, h4 {
+  font-family: var(--font-serif);
+  margin: 0;
+}
+
+p {
+  margin: 0;
+}
+
+img {
+  display: block;
+  max-width: 100%;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+a, button, [role="button"], input[type="submit"] {
+  cursor: pointer;
+}
+
+label {
+  cursor: pointer;
+}
+
+input:focus-visible, button:focus-visible {
+  outline: 2px solid #768c5e;
+  outline-offset: 2px;
+}
+
+@keyframes toast-slide-in {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
