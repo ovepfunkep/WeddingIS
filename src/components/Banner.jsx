@@ -11,7 +11,7 @@ export default function Banner() {
           className="absolute inset-0 w-full h-full object-cover pointer-events-none opacity-50 left-[200px] md:left-0"
         />
 
-        {/* Pendant (top-left) */}
+        {/* Pendant (top-left) ПРИВЕТ СОНЯ */}
         <img
           src={asset('Block1_Pendant.png')}
           alt=""
