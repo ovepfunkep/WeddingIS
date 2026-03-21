@@ -16,14 +16,15 @@ const secondaryPalette = [
 
 export default function DressCode() {
   return (
-    <section className="pt-[60px] lg:pt-[100px] max-w-[1440px] mx-auto px-[16px] lg:px-[124px]">
-      <div className="flex flex-col lg:flex-row items-start gap-[32px] lg:gap-[48px]">
+    <section className="pt-[60px] lg:pt-[110px] max-w-[1440px] mx-auto px-[16px] lg:px-[124px]">
+      <div className="flex flex-col lg:flex-row items-start gap-0 lg:gap-[0px] lg:justify-between">
         {/* Text */}
-        <div className="w-full lg:w-[42%] flex flex-col gap-[20px] lg:gap-[32px]">
-          <h2 className="font-serif font-semibold text-[42px] lg:text-[74px] leading-[1.08] text-[#768c5e] tracking-[-0.03em]">
+        <div className="w-full lg:w-[40%] flex flex-col gap-[20px] lg:gap-[32px] mb-[25px] lg:mb-0">
+          <h2 className="font-serif font-semibold text-[56px] lg:text-[74px] leading-[56px] lg:leading-[80px] text-[#768c5e] tracking-[-1.68px] lg:tracking-[-2.22px]">
             Дресс-код
           </h2>
-          <div className="flex flex-col gap-[16px] lg:gap-[24px] text-[18px] lg:text-[24px] leading-[1.42] text-[#514e4e] font-light tracking-[-0.04em]">
+          <div className="flex flex-col gap-[16px] lg:gap-[24px] text-[20px] lg:text-[24px] leading-[28px] lg:leading-[34px]
+           text-[#514e4e] font-light lg:tracking-[-0.96px] tracking-[-0.8px]">
             <p>
               Мы с&nbsp;особым трепетом готовимся к&nbsp;этому дню и&nbsp;нам будет очень приятно, если ваши образы станут частью этой красивой картины
             </p>
@@ -40,17 +41,21 @@ export default function DressCode() {
           </div>
         </div>
 
+        {/* Mobile divider between text and palette */}
+        <div className="lg:hidden w-full h-px bg-[#ddd] mb-[32px]" />
+
         {/* Palette — aligned to top of text block */}
-        <div className="w-full lg:w-[58%] flex flex-col gap-[32px]">
+        <div className="w-full lg:mt-[13px] lg:w-[50%] flex flex-col gap-[32px]">
           {/* Main colors */}
-          <div className="flex flex-col gap-[20px]">
-            <div className="flex flex-col gap-[4px] text-[18px] lg:text-[24px] text-[#514e4e] tracking-[-0.04em]">
+          <div className="flex flex-col gap-[20px] lg:gap-[28px]">
+            <div className="flex flex-col gap-[4px] text-[20px] leading-[28px] lg:leading-[34px] lg:text-[24px] text-[#514e4e] 
+            lg:tracking-[-0.96px] tracking-[-0.8px]">
               <p className="font-medium leading-[1.42]">Основные цвета:</p>
               <p className="font-light leading-[1.42]">Оливковый, зелёный, тёмный шоколад, коричневый, песочный, бежевый</p>
             </div>
-            <div className="flex gap-[2px]">
+            <div className="grid grid-cols-3 gap-[4px] md:flex md:gap-[2px]">
               {mainPalette.map((c) => (
-                <div key={c.name} className="flex-1 aspect-square min-w-0">
+                <div key={c.name} className="min-w-0 h-[88px] md:w-[121px] md:h-[121px] md:flex-none lg:w-auto lg:h-auto lg:flex-1 lg:aspect-square">
                   <img src={c.img} alt={c.name} className="w-full h-full object-cover rounded-full" />
                 </div>
               ))}
@@ -61,14 +66,15 @@ export default function DressCode() {
           <div className="w-full h-px bg-[#768c5e]/20" />
 
           {/* Secondary colors */}
-          <div className="flex flex-col gap-[20px]">
-            <div className="flex flex-col gap-[4px] text-[18px] lg:text-[24px] text-[#514e4e] tracking-[-0.04em]">
+          <div className="flex flex-col gap-[20px] lg:gap-[28px]">
+            <div className="flex flex-col gap-[4px] text-[20px] leading-[28px] lg:leading-[34px] lg:text-[24px] text-[#514e4e] 
+            lg:tracking-[-0.96px] tracking-[-0.8px]">
               <p className="font-medium leading-[1.42]">Дополнительные цвета:</p>
               <p className="font-light leading-[1.42]">Серебряный, пыльный розовый</p>
             </div>
-            <div className="flex gap-[2px]">
+            <div className="grid grid-cols-3 gap-[4px] md:flex md:gap-[2px]">
               {secondaryPalette.map((c) => (
-                <div key={c.name} className="w-[80px] h-[80px] lg:w-[100px] lg:h-[100px]">
+                <div key={c.name} className="min-w-0 h-[88px] md:w-[121px] md:h-[121px] md:flex-none lg:flex-none lg:w-[100px] lg:h-[100px]">
                   <img src={c.img} alt={c.name} className="w-full h-full object-cover rounded-full" />
                 </div>
               ))}
