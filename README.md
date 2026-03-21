@@ -1,4 +1,20 @@
-# React + Vite
+# Wedding site (React + Vite)
+
+## GitHub Pages
+
+В продакшене **нельзя** отдавать корневой `index.html` с `<script src="/src/main.jsx">` — такого файла на сервере нет. Нужен **результат сборки**:
+
+```bash
+npm run build
+```
+
+Публикуется содержимое папки **`dist/`** (там уже подключены `/WeddingIS/assets/...`).
+
+- **Автодеплой:** в репозитории GitHub → **Settings → Pages → Build and deployment → Source: GitHub Actions**, затем пуш в `main`/`master` запускает [workflow](.github/workflows/deploy-github-pages.yml).
+- **Вручную:** `npm run deploy` (gh-pages) — тоже заливает **`dist`**, не исходники.
+- В [`vite.config.js`](vite.config.js) параметр `base` должен совпадать с именем репозитория: `/WeddingIS/` для URL `https://ovepfunkep.github.io/WeddingIS/`. Для сайта **в корне** `https://ovepfunkep.github.io/` задайте `base: '/'`.
+
+---
 
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
