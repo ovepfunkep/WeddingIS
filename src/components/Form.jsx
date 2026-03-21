@@ -1,4 +1,4 @@
-import { useState, useRef, useLayoutEffect, useEffect, useId } from 'react';
+import { useState, useRef, useLayoutEffect, useEffect, useId, useMemo } from 'react';
 import { asset } from '../utils/assets';
 
 const INITIAL = {
@@ -11,36 +11,48 @@ const INITIAL = {
   drinkWishes: '',
 };
 
-function RadioGroup({ name, value, onChange, options }) {
+function FieldHint({ children, id }) {
+  if (!children) return null;
   return (
-    <div className="flex flex-col gap-[4px]">
-      {options.map((opt) => (
-        <label key={opt.value} className="flex items-center gap-[8px] py-[8px] cursor-pointer group">
-          <span className="relative w-[24px] h-[24px] shrink-0">
-            <span className={`absolute inset-[2px] rounded-full border-2 transition-colors ${value === opt.value ? 'bg-[#768c5e] border-[#768c5e]' : 'bg-white border-[#d1cfd7]'
-              }`} />
-            {value === opt.value && (
-              <span className="absolute inset-[7px] rounded-full bg-white" />
-            )}
-          </span>
-          <input
-            type="radio"
-            name={name}
-            value={opt.value}
-            checked={value === opt.value}
-            onChange={() => onChange(opt.value)}
-            className="sr-only"
-          />
-          <span className="text-[20px] leading-[26px] lg:text-[20px] lg:leading-[34px] font-light text-[#514e4e] tracking-[-0.8px] lg:tracking-[-0.96px] group-hover:text-[#768c5e] transition-colors">
-            {opt.label}
-          </span>
-        </label>
-      ))}
+    <p id={id} className="mt-[8px] text-[14px] leading-[1.4] text-[#c53030] tracking-[-0.02em]" role="alert">
+      {children}
+    </p>
+  );
+}
+
+function RadioGroup({ name, value, onChange, options, hasError, hint, hintId }) {
+  return (
+    <div aria-invalid={hasError || undefined} aria-describedby={hasError && hintId ? hintId : undefined}>
+      <div className="flex flex-col gap-[4px]">
+        {options.map((opt) => (
+          <label key={opt.value} className="flex cursor-pointer items-center gap-[8px] py-[8px] group">
+            <span className="relative h-[24px] w-[24px] shrink-0">
+              <span className={`absolute inset-[2px] rounded-full border-2 transition-colors ${value === opt.value ? 'border-[#768c5e] bg-[#768c5e]' : 'border-[#d1cfd7] bg-white'
+                }`} />
+              {value === opt.value && (
+                <span className="absolute inset-[7px] rounded-full bg-white" />
+              )}
+            </span>
+            <input
+              type="radio"
+              name={name}
+              value={opt.value}
+              checked={value === opt.value}
+              onChange={() => onChange(opt.value)}
+              className="sr-only"
+            />
+            <span className="text-[20px] font-light leading-[26px] tracking-[-0.8px] text-[#514e4e] transition-colors group-hover:text-[#768c5e] lg:text-[20px] lg:leading-[34px] lg:tracking-[-0.96px]">
+              {opt.label}
+            </span>
+          </label>
+        ))}
+      </div>
+      {hasError && hint && <FieldHint id={hintId}>{hint}</FieldHint>}
     </div>
   );
 }
 
-function CheckboxGroup({ values, onChange, options }) {
+function CheckboxGroup({ values, onChange, options, hasError, hint, hintId }) {
   const toggle = (val) => {
     onChange(
       values.includes(val) ? values.filter((v) => v !== val) : [...values, val]
@@ -48,32 +60,35 @@ function CheckboxGroup({ values, onChange, options }) {
   };
 
   return (
-    <div className="flex flex-col gap-[4px]">
-      {options.map((opt) => {
-        const checked = values.includes(opt.value);
-        return (
-          <label key={opt.value} className="flex items-center gap-[8px] py-[8px] cursor-pointer group">
-            <span className="relative w-[24px] h-[24px] shrink-0">
-              <span className={`absolute inset-[2px] rounded-[4px] transition-colors ${checked ? 'bg-[#768c5e]' : 'bg-white border border-[#d1cfd7]'
-                }`} />
-              {checked && (
-                <svg className="absolute inset-[4px] text-white" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M3 8l3.5 3.5L13 5" />
-                </svg>
-              )}
-            </span>
-            <input
-              type="checkbox"
-              checked={checked}
-              onChange={() => toggle(opt.value)}
-              className="sr-only"
-            />
-            <span className="text-[20px] leading-[26px] lg:text-[20px] lg:leading-[34px] font-light text-[#514e4e] tracking-[-0.8px] lg:tracking-[-0.96px] group-hover:text-[#768c5e] transition-colors">
-              {opt.label}
-            </span>
-          </label>
-        );
-      })}
+    <div aria-invalid={hasError || undefined} aria-describedby={hasError && hintId ? hintId : undefined}>
+      <div className="flex flex-col gap-[4px]">
+        {options.map((opt) => {
+          const checked = values.includes(opt.value);
+          return (
+            <label key={opt.value} className="flex cursor-pointer items-center gap-[8px] py-[8px] group">
+              <span className="relative h-[24px] w-[24px] shrink-0">
+                <span className={`absolute inset-[2px] rounded-[4px] transition-colors ${checked ? 'bg-[#768c5e]' : 'border border-[#d1cfd7] bg-white'
+                  }`} />
+                {checked && (
+                  <svg className="absolute inset-[4px] text-white" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M3 8l3.5 3.5L13 5" />
+                  </svg>
+                )}
+              </span>
+              <input
+                type="checkbox"
+                checked={checked}
+                onChange={() => toggle(opt.value)}
+                className="sr-only"
+              />
+              <span className="text-[20px] font-light leading-[26px] tracking-[-0.8px] text-[#514e4e] transition-colors group-hover:text-[#768c5e] lg:text-[20px] lg:leading-[34px] lg:tracking-[-0.96px]">
+                {opt.label}
+              </span>
+            </label>
+          );
+        })}
+      </div>
+      {hasError && hint && <FieldHint id={hintId}>{hint}</FieldHint>}
     </div>
   );
 }
@@ -92,11 +107,39 @@ export default function Form() {
   const transferTooltipPanelRef = useRef(null);
   const transferTooltipArrowRef = useRef(null);
   const transferInfoClipId = useId().replace(/:/g, '');
+  const hintIdBase = useId().replace(/:/g, '');
+
+  const [submitAttempted, setSubmitAttempted] = useState(false);
 
   const set = (key) => (val) => setForm((p) => ({ ...p, [key]: val }));
   const setInput = (key) => (e) => setForm((p) => ({ ...p, [key]: e.target.value }));
 
   const isAttending = form.attendance !== 'no';
+
+  /** Все поля обязательны, кроме текста «особые пожелания по напиткам». */
+  const isFormValid = useMemo(() => {
+    if (!form.name.trim()) return false;
+    if (form.attendance !== 'yes' && form.attendance !== 'no') return false;
+    if (form.attendance === 'no') return true;
+    if (form.withPartner !== 'yes' && form.withPartner !== 'no') return false;
+    if (form.withPartner === 'yes' && !form.partnerName.trim()) return false;
+    if (form.transfer !== 'yes' && form.transfer !== 'no') return false;
+    if (form.drinks.length === 0) return false;
+    return true;
+  }, [form]);
+
+  const show = submitAttempted;
+  const nameInvalid = show && !form.name.trim();
+  const attendanceInvalid = show && form.attendance !== 'yes' && form.attendance !== 'no';
+  /* Пока не выбрано «не смогу», блоки ниже видны — подсвечиваем их при отправке, если не заполнены (кроме необязательных пожеланий). */
+  const withPartnerInvalid = show && isAttending && form.withPartner !== 'yes' && form.withPartner !== 'no';
+  const partnerNameInvalid = show && isAttending && form.withPartner === 'yes' && !form.partnerName.trim();
+  const transferInvalid = show && isAttending && form.transfer !== 'yes' && form.transfer !== 'no';
+  const drinksInvalid = show && isAttending && form.drinks.length === 0;
+
+  useEffect(() => {
+    if (isFormValid && submitAttempted) setSubmitAttempted(false);
+  }, [isFormValid, submitAttempted]);
 
   /** Целевой шаг между дырками (px). Число дырок подбираем так, чтобы при justify-between промежутки были близки к этому значению. */
   const HOLE_DESKTOP_PX = 34;
@@ -265,6 +308,14 @@ export default function Form() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    if (!isFormValid) {
+      setSubmitAttempted(true);
+      requestAnimationFrame(() => {
+        document.querySelector('[data-form-error]')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      });
+      return;
+    }
+    setSubmitAttempted(false);
     setSubmitted(true);
   };
 
@@ -342,28 +393,42 @@ export default function Form() {
 
                   <div className="flex flex-col gap-[24px]">
                     {/* Name */}
-                    <div className="flex flex-col gap-[10px]">
-                      <label className="text-[20px] leading-[26px] lg:text-[20px] font-medium text-[#514e4e] tracking-[-0.8px] lg:tracking-[-0.96px]">Имя</label>
+                    <div className="flex flex-col gap-[10px]" {...(nameInvalid ? { 'data-form-error': '' } : {})}>
+                      <label
+                        htmlFor={`${hintIdBase}-name-input`}
+                        className="text-[20px] font-medium leading-[26px] tracking-[-0.8px] text-[#514e4e] lg:text-[20px] lg:tracking-[-0.96px]"
+                      >
+                        Имя
+                      </label>
                       <input
+                        id={`${hintIdBase}-name-input`}
                         type="text"
                         value={form.name}
                         onChange={setInput('name')}
                         placeholder="Ваше имя и фамилия"
-                        className="w-full border border-[#d1cfd7] rounded-[12px] px-[16px] py-[18px] text-[20px] leading-[26px] lg:text-[20px] text-[#514e4e] font-light tracking-[-0.8px] lg:tracking-[-0.96px] placeholder:text-[#8b8c94] outline-none focus:border-[#768c5e] transition-colors"
+                        aria-invalid={nameInvalid || undefined}
+                        aria-describedby={nameInvalid ? `${hintIdBase}-name-hint` : undefined}
+                        className={`w-full rounded-[12px] border px-[16px] py-[18px] text-[20px] font-light leading-[26px] tracking-[-0.8px] text-[#514e4e] outline-none transition-colors placeholder:text-[#8b8c94] lg:text-[20px] lg:tracking-[-0.96px] ${nameInvalid ? 'border-[#c53030] focus:border-[#c53030]' : 'border-[#d1cfd7] focus:border-[#768c5e]'}`}
                       />
+                      {nameInvalid && (
+                        <FieldHint id={`${hintIdBase}-name-hint`}>Укажите имя и фамилию</FieldHint>
+                      )}
                     </div>
 
                     <Divider />
 
                     {/* Attendance */}
-                    <div className="flex flex-col gap-[16px]">
-                      <p className="text-[20px] leading-[26px] lg:leading-[34px] lg:text-[20px] font-medium text-[#514e4e] tracking-[-0.8px] lg:tracking-[-0.96px]">
+                    <div className="flex flex-col gap-[16px]" {...(attendanceInvalid ? { 'data-form-error': '' } : {})}>
+                      <p className="text-[20px] font-medium leading-[26px] tracking-[-0.8px] text-[#514e4e] lg:text-[20px] lg:leading-[34px] lg:tracking-[-0.96px]">
                         Сможете ли вы присутствовать?
                       </p>
                       <RadioGroup
                         name="attendance"
                         value={form.attendance}
                         onChange={set('attendance')}
+                        hasError={attendanceInvalid}
+                        hint="Выберите один из вариантов"
+                        hintId={`${hintIdBase}-attendance-hint`}
                         options={[
                           { value: 'yes', label: 'С радостью буду' },
                           { value: 'no', label: 'К сожалению, не смогу' },
@@ -377,14 +442,17 @@ export default function Form() {
                         <Divider />
 
                         {/* With partner */}
-                        <div className="flex flex-col gap-[16px]">
-                          <p className="text-[20px] leading-[26px] lg:leading-[34px] lg:text-[20px] font-medium text-[#514e4e] tracking-[-0.8px] lg:tracking-[-0.96px]">
+                        <div className="flex flex-col gap-[16px]" {...(withPartnerInvalid ? { 'data-form-error': '' } : {})}>
+                          <p className="text-[20px] font-medium leading-[26px] tracking-[-0.8px] text-[#514e4e] lg:text-[20px] lg:leading-[34px] lg:tracking-[-0.96px]">
                             Будете ли вы с партнёром?
                           </p>
                           <RadioGroup
                             name="withPartner"
                             value={form.withPartner}
                             onChange={set('withPartner')}
+                            hasError={withPartnerInvalid}
+                            hint="Выберите один из вариантов"
+                            hintId={`${hintIdBase}-partner-hint`}
                             options={[
                               { value: 'yes', label: 'Да' },
                               { value: 'no', label: 'Нет' },
@@ -394,24 +462,33 @@ export default function Form() {
 
                         {/* Partner name (conditional) */}
                         {form.withPartner === 'yes' && (
-                          <div className="flex flex-col gap-[10px]">
-                            <label className="text-[20px] leading-[26px] lg:leading-[34px] lg:text-[20px] font-medium text-[#514e4e] tracking-[-0.8px] lg:tracking-[-0.96px]">
+                          <div className="flex flex-col gap-[10px]" {...(partnerNameInvalid ? { 'data-form-error': '' } : {})}>
+                            <label
+                              htmlFor={`${hintIdBase}-partner-name-input`}
+                              className="text-[20px] font-medium leading-[26px] tracking-[-0.8px] text-[#514e4e] lg:text-[20px] lg:leading-[34px] lg:tracking-[-0.96px]"
+                            >
                               Как зовут вашего партнёра?
                             </label>
                             <input
+                              id={`${hintIdBase}-partner-name-input`}
                               type="text"
                               value={form.partnerName}
                               onChange={setInput('partnerName')}
                               placeholder="Имя и фамилия вашего партнёра"
-                              className="w-full min-w-0 border border-[#d1cfd7] rounded-[12px] px-[12px] py-[18px] text-[20px] leading-[26px] text-[#514e4e] font-light tracking-[-0.8px] lg:px-[16px] lg:text-[20px] lg:tracking-[-0.96px] placeholder:text-[17px] placeholder:leading-[1.35] placeholder:tracking-[-0.04em] placeholder:text-[#8b8c94] lg:placeholder:text-[20px] lg:placeholder:leading-[26px] lg:placeholder:tracking-[-0.96px] outline-none focus:border-[#768c5e] transition-colors"
+                              aria-invalid={partnerNameInvalid || undefined}
+                              aria-describedby={partnerNameInvalid ? `${hintIdBase}-partner-name-hint` : undefined}
+                              className={`w-full min-w-0 rounded-[12px] border px-[12px] py-[18px] text-[20px] font-light leading-[26px] tracking-[-0.8px] text-[#514e4e] outline-none transition-colors placeholder:text-[17px] placeholder:leading-[1.35] placeholder:tracking-[-0.04em] placeholder:text-[#8b8c94] lg:px-[16px] lg:text-[20px] lg:placeholder:text-[20px] lg:placeholder:leading-[26px] lg:placeholder:tracking-[-0.96px] lg:tracking-[-0.96px] ${partnerNameInvalid ? 'border-[#c53030] focus:border-[#c53030]' : 'border-[#d1cfd7] focus:border-[#768c5e]'}`}
                             />
+                            {partnerNameInvalid && (
+                              <FieldHint id={`${hintIdBase}-partner-name-hint`}>Укажите имя и фамилию партнёра</FieldHint>
+                            )}
                           </div>
                         )}
 
                         <Divider />
 
                         {/* Transfer */}
-                        <div className="flex flex-col gap-[16px]">
+                        <div className="flex flex-col gap-[16px]" {...(transferInvalid ? { 'data-form-error': '' } : {})}>
                           <div className="flex items-center gap-[8px]">
                             <p className="text-[20px] leading-[26px] lg:leading-[34px] lg:text-[20px] font-medium text-[#514e4e] tracking-[-0.8px] lg:tracking-[-0.96px]">
                               Нужен ли вам трансфер
@@ -485,6 +562,9 @@ export default function Form() {
                             name="transfer"
                             value={form.transfer}
                             onChange={set('transfer')}
+                            hasError={transferInvalid}
+                            hint="Выберите вариант трансфера"
+                            hintId={`${hintIdBase}-transfer-hint`}
                             options={[
                               { value: 'yes', label: 'Да, поеду на трансфере' },
                               { value: 'no', label: 'Нет, доберусь самостоятельно' },
@@ -495,13 +575,16 @@ export default function Form() {
                         <Divider />
 
                         {/* Drinks */}
-                        <div className="flex flex-col gap-[10px]">
-                          <p className="text-[20px] leading-[26px] lg:leading-[34px] lg:text-[20px] font-medium text-[#514e4e] tracking-[-0.8px] lg:tracking-[-0.96px]">
+                        <div className="flex flex-col gap-[10px]" {...(drinksInvalid ? { 'data-form-error': '' } : {})}>
+                          <p className="text-[20px] font-medium leading-[26px] tracking-[-0.8px] text-[#514e4e] lg:text-[20px] lg:leading-[34px] lg:tracking-[-0.96px]">
                             Предпочтения по напиткам
                           </p>
                           <CheckboxGroup
                             values={form.drinks}
                             onChange={set('drinks')}
+                            hasError={drinksInvalid}
+                            hint="Отметьте хотя бы один вариант"
+                            hintId={`${hintIdBase}-drinks-hint`}
                             options={[
                               { value: 'sparkling', label: 'Игристое / шампанское' },
                               { value: 'wine', label: 'Вино' },
@@ -533,7 +616,7 @@ export default function Form() {
 
                 <button
                   type="submit"
-                  className="w-full bg-[#768c5e] text-white rounded-full py-[16px] text-[20px] leading-[26px] lg:text-[20px] tracking-[-0.8px] lg:tracking-[-0.96px] hover:bg-[#6a7f53] active:bg-[#5f7249] transition-colors"
+                  className="w-full rounded-full bg-[#768c5e] py-[16px] text-[20px] leading-[26px] text-white transition-colors tracking-[-0.8px] hover:bg-[#6a7f53] active:bg-[#5f7249] lg:text-[20px] lg:tracking-[-0.96px]"
                 >
                   {form.attendance === 'no' ? 'Продолжить' : 'Подтвердить участие'}
                 </button>
