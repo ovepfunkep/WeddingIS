@@ -3,7 +3,7 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
-  "homepage": "https://ivan-tyabin.github.io/Wedding2",
+  "homepage": "https://ovepfunkep.github.io/WeddingIS",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
