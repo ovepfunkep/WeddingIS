@@ -78,7 +78,7 @@ function InfoBlockMobile({
 export default function ImportantInfo() {
   return (
     <section className="pt-[90px] lg:pt-[120px] max-w-[1440px] mx-auto px-[16px] lg:px-[124px]">
-      <h2 className="font-serif font-semibold text-[56px] lg:text-[74px] leading-[56px] leading-[80px] text-[#768c5e] tracking-[-1.68px] lg:tracking-[-2.22px] text-center mb-[32px] lg:mb-[48px]">
+      <h2 className="font-serif font-semibold text-[56px] lg:text-[74px] leading-[56px] lg:leading-[80px] text-[#768c5e] tracking-[-1.68px] lg:tracking-[-2.22px] text-center mb-[32px] lg:mb-[48px]">
         Важная информация
       </h2>
 
