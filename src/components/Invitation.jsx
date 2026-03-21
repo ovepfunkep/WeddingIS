@@ -28,7 +28,7 @@ export default function Invitation() {
 
           <div className="flex md:text-center lg:text-left flex-col gap-[12px]">
             <p
-              className="font-serif font-semibold text-[42px] lg:text-[58px] leading-[42px] lg:leading-[60px] text-[#768c5e] md:tracking-[-1.26px] lg:tracking-[-1.74px]"
+              className="font-serif font-semibold text-[42px] lg:text-[58px] leading-[42px] lg:leading-[60px] text-[#768c5e] tracking-[-1.26px] lg:tracking-[-1.74px]"
               style={{ fontFeatureSettings: "'ordn' 1, 'ss03' 1, 'liga' 0, 'hlig' 1" }}
             >
               24 августа 2026 года
