@@ -12,19 +12,26 @@ export default function PearlDivider() {
     const el = containerRef.current;
     if (!el || typeof ResizeObserver === 'undefined') return;
 
+    let raf = 0;
     const update = () => {
-      const cs = getComputedStyle(el);
-      const pl = parseFloat(cs.paddingLeft) || 0;
-      const pr = parseFloat(cs.paddingRight) || 0;
-      const inner = el.clientWidth - pl - pr;
-      const n = Math.max(1, Math.floor(inner / PEARL_PX));
-      setCount(n);
+      cancelAnimationFrame(raf);
+      raf = requestAnimationFrame(() => {
+        const cs = getComputedStyle(el);
+        const pl = parseFloat(cs.paddingLeft) || 0;
+        const pr = parseFloat(cs.paddingRight) || 0;
+        const inner = el.clientWidth - pl - pr;
+        const n = Math.max(1, Math.floor(inner / PEARL_PX));
+        setCount((prev) => (prev === n ? prev : n));
+      });
     };
 
     update();
     const ro = new ResizeObserver(update);
     ro.observe(el);
-    return () => ro.disconnect();
+    return () => {
+      cancelAnimationFrame(raf);
+      ro.disconnect();
+    };
   }, []);
 
   return (

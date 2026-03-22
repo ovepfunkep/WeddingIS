@@ -120,13 +120,12 @@ export default function Form() {
     return p?.submitted ?? false;
   });
   const [transferTooltipOpen, setTransferTooltipOpen] = useState(false);
-  /** На мобилке: тултип под иконкой (не хватило места сверху) — стрелка должна быть сверху панели */
-  const [transferTooltipMobileBelow, setTransferTooltipMobileBelow] = useState(false);
   const drinkWishesRef = useRef(null);
   const transferTooltipRef = useRef(null);
   const transferInfoBtnRef = useRef(null);
   const transferTooltipPanelRef = useRef(null);
   const transferTooltipArrowRef = useRef(null);
+  const transferTooltipContentRef = useRef(null);
   const transferInfoClipId = useId().replace(/:/g, '');
   const hintIdBase = useId().replace(/:/g, '');
 
@@ -254,6 +253,12 @@ export default function Form() {
     if (arrow) {
       arrow.style.marginLeft = '';
       arrow.style.alignSelf = '';
+      arrow.style.position = '';
+      arrow.style.top = '';
+      arrow.style.bottom = '';
+      arrow.style.left = '';
+      arrow.style.right = '';
+      arrow.style.transform = '';
     }
   };
 
@@ -290,40 +295,53 @@ export default function Form() {
       panel.style.transform = 'none';
       panel.style.width = `${maxW}px`;
 
-      const tipH = Math.max(panel.getBoundingClientRect().height, panel.offsetHeight, 1);
+      const contentEl = transferTooltipContentRef.current;
+      const contentH = contentEl?.offsetHeight ?? 72;
+      /** Высота блока с учётом ромба-стрелки (~8px) у края пузыря */
+      const blockH = contentH + 8;
+
       let left = btnR.left + btnR.width / 2 - maxW / 2;
       left = Math.max(pad, Math.min(left, vw - maxW - pad));
 
-      let top = btnR.top - tipH - gap;
+      let top = btnR.top - blockH - gap;
       let openedBelow = false;
       if (top < pad) {
         openedBelow = true;
         top = btnR.bottom + gap;
       }
-      top = Math.max(pad, Math.min(top, vh - tipH - pad));
+      top = Math.max(pad, Math.min(top, vh - blockH - pad));
 
       panel.style.left = `${left}px`;
       panel.style.top = `${top}px`;
 
-      setTransferTooltipMobileBelow(openedBelow);
-
-      // Стрелка в потоке (flex), не absolute — иначе с overflow-x-hidden на main её клипает
+      // Стрелка: absolute у relative-обёртки — без смены order в DOM (иначе ломается расчёт top)
       const arrow = transferTooltipArrowRef.current;
-      if (arrow) {
+      const wrap = contentEl?.parentElement;
+      if (arrow && contentEl && wrap) {
+        arrow.style.position = 'absolute';
+        arrow.style.width = '8px';
+        arrow.style.height = '8px';
+        arrow.style.marginLeft = '0';
+        arrow.style.alignSelf = '';
+        if (openedBelow) {
+          arrow.style.top = '-4px';
+          arrow.style.bottom = 'auto';
+        } else {
+          arrow.style.bottom = '-4px';
+          arrow.style.top = 'auto';
+        }
         const panelRect = panel.getBoundingClientRect();
         const iconCx = btnR.left + btnR.width / 2;
-        const half = 4;
-        let ml = iconCx - panelRect.left - half;
+        let arrowLeft = iconCx - panelRect.left - 4;
         const inset = 10;
-        ml = Math.max(inset, Math.min(ml, panelRect.width - 8 - inset));
-        arrow.style.alignSelf = 'flex-start';
-        arrow.style.marginLeft = `${ml}px`;
+        arrowLeft = Math.max(inset, Math.min(arrowLeft, panelRect.width - 8 - inset));
+        arrow.style.left = `${arrowLeft}px`;
+        arrow.style.right = 'auto';
       }
     };
 
     if (!mq.matches) {
       resetTransferTooltipPanelStyle();
-      setTransferTooltipMobileBelow(false);
       return;
     }
 
@@ -332,12 +350,11 @@ export default function Form() {
       requestAnimationFrame(() => positionMobile());
     });
     window.addEventListener('resize', positionMobile);
-    window.addEventListener('scroll', positionMobile, true);
+    window.addEventListener('scroll', positionMobile, { capture: true, passive: true });
     return () => {
       window.removeEventListener('resize', positionMobile);
-      window.removeEventListener('scroll', positionMobile, true);
+      window.removeEventListener('scroll', positionMobile, { capture: true });
       resetTransferTooltipPanelStyle();
-      setTransferTooltipMobileBelow(false);
     };
   }, [transferTooltipOpen]);
 
@@ -644,20 +661,22 @@ export default function Form() {
                               </button>
                               <div
                                 ref={transferTooltipPanelRef}
-                                className={`pointer-events-none z-50 flex max-w-[min(240px,calc(100vw-32px))] flex-col max-lg:items-stretch lg:items-center ${transferTooltipOpen ? 'max-lg:fixed max-lg:block' : 'max-lg:hidden'
-                                  } relative hidden lg:absolute lg:bottom-full lg:left-1/2 lg:mb-[8px] lg:-translate-x-1/2 lg:group-hover:block`}
+                                className={`pointer-events-none z-50 hidden max-w-[min(240px,calc(100vw-32px))] lg:absolute lg:bottom-full lg:left-1/2 lg:mb-[8px] lg:-translate-x-1/2 lg:group-hover:block ${transferTooltipOpen ? 'max-lg:fixed max-lg:block' : 'max-lg:hidden'}`}
                                 role="tooltip"
                               >
-                                <div
-                                  className={`w-full min-w-0 rounded-[12px] bg-[#514e4e] px-[16px] py-[12px] text-center text-[14px] leading-[1.4] text-white shadow-lg lg:order-1 lg:w-[240px] ${transferTooltipMobileBelow ? 'order-2' : 'order-1'}`}
-                                >
-                                  Организованная доставка гостей от&nbsp;города до&nbsp;площадки и&nbsp;обратно
+                                <div className="relative w-full overflow-visible lg:w-[240px]">
+                                  <div
+                                    ref={transferTooltipContentRef}
+                                    className="w-full min-w-0 rounded-[12px] bg-[#514e4e] px-[16px] py-[12px] text-center text-[14px] leading-[1.4] text-white shadow-lg"
+                                  >
+                                    Организованная доставка гостей от&nbsp;города до&nbsp;площадки и&nbsp;обратно
+                                  </div>
+                                  <div
+                                    ref={transferTooltipArrowRef}
+                                    className="absolute z-10 h-2 w-2 shrink-0 rotate-45 bg-[#514e4e] lg:bottom-[-4px] lg:left-1/2 lg:top-auto lg:-translate-x-1/2"
+                                    aria-hidden
+                                  />
                                 </div>
-                                <div
-                                  ref={transferTooltipArrowRef}
-                                  className={`z-10 h-[8px] w-[8px] shrink-0 rotate-45 bg-[#514e4e] lg:order-2 lg:mx-auto lg:mb-0 lg:mt-[-4px] ${transferTooltipMobileBelow ? 'order-1 mb-[-4px]' : 'order-2 mt-[-4px]'}`}
-                                  aria-hidden
-                                />
                               </div>
                             </div>
                           </div>

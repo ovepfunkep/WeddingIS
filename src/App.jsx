@@ -12,7 +12,7 @@ import SectionReveal from './components/SectionReveal';
 
 export default function App() {
   return (
-    <main className="min-h-screen bg-[#f6f4f1] overflow-x-hidden selection:bg-[#768c5e] selection:text-white">
+    <main className="min-h-screen bg-[#f6f4f1] overflow-x-clip selection:bg-[#768c5e] selection:text-white">
       <SectionReveal className="w-full">
         <Banner />
       </SectionReveal>
