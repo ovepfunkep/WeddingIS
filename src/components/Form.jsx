@@ -13,10 +13,13 @@ const INITIAL = {
 
 function FieldHint({ children, id }) {
   if (!children) return null;
+  /* pt-[8px]: стабильный отступ от поля (margin у <p> и flex gap часто «съедают» визуально) */
   return (
-    <p id={id} className="mt-[8px] text-[14px] leading-[1.4] text-[#c53030] tracking-[-0.02em]" role="alert">
-      {children}
-    </p>
+    <div className="pt-[12px]">
+      <p id={id} className="m-0 text-[14px] leading-[1.4] text-[#c53030] tracking-[-0.02em]" role="alert">
+        {children}
+      </p>
+    </div>
   );
 }
 
@@ -325,7 +328,7 @@ export default function Form() {
         {/* Header — мобилка: 16px от края экрана; десктоп: как раньше */}
         <div className="px-[16px] lg:px-[32px]">
           <div className="text-center mb-[48px] lg:mb-[48px] max-w-[788px] mx-auto flex flex-col gap-[20px]">
-            <h2 className="font-serif font-semibold text-[56px] lg:text-[74px] lg:leading-[80px] text-[#768c5e] tracking-[-1.68px] lg:tracking-[-2.22px]">
+            <h2 className="font-serif font-semibold text-[56px] lg:text-[74px] leading-[56px] lg:leading-[80px] text-[#768c5e] tracking-[-1.68px] lg:tracking-[-2.22px]">
               Вы&nbsp;выбираете быть с&nbsp;нами в&nbsp;этот день?
             </h2>
             <p className="text-[20px] lg:text-[24px] leading-[28px] lg:leading-[34px] text-[#514e4e] tracking-[-0.8px] lg:tracking-[-0.96px]">
@@ -392,24 +395,26 @@ export default function Form() {
                   </div>
 
                   <div className="flex flex-col gap-[24px]">
-                    {/* Name */}
-                    <div className="flex flex-col gap-[10px]" {...(nameInvalid ? { 'data-form-error': '' } : {})}>
-                      <label
-                        htmlFor={`${hintIdBase}-name-input`}
-                        className="text-[20px] font-medium leading-[26px] tracking-[-0.8px] text-[#514e4e] lg:text-[20px] lg:tracking-[-0.96px]"
-                      >
-                        Имя
-                      </label>
-                      <input
-                        id={`${hintIdBase}-name-input`}
-                        type="text"
-                        value={form.name}
-                        onChange={setInput('name')}
-                        placeholder="Ваше имя и фамилия"
-                        aria-invalid={nameInvalid || undefined}
-                        aria-describedby={nameInvalid ? `${hintIdBase}-name-hint` : undefined}
-                        className={`w-full rounded-[12px] border px-[16px] py-[18px] text-[20px] font-light leading-[26px] tracking-[-0.8px] text-[#514e4e] outline-none transition-colors placeholder:text-[#8b8c94] lg:text-[20px] lg:tracking-[-0.96px] ${nameInvalid ? 'border-[#c53030] focus:border-[#c53030]' : 'border-[#d1cfd7] focus:border-[#768c5e]'}`}
-                      />
+                    {/* Name — подсказка вне flex с gap, иначе отступ 8px не контролируется */}
+                    <div className="flex flex-col" {...(nameInvalid ? { 'data-form-error': '' } : {})}>
+                      <div className="flex flex-col gap-[10px]">
+                        <label
+                          htmlFor={`${hintIdBase}-name-input`}
+                          className="text-[20px] font-medium leading-[26px] tracking-[-0.8px] text-[#514e4e] lg:text-[20px] lg:tracking-[-0.96px]"
+                        >
+                          Имя
+                        </label>
+                        <input
+                          id={`${hintIdBase}-name-input`}
+                          type="text"
+                          value={form.name}
+                          onChange={setInput('name')}
+                          placeholder="Ваше имя и фамилия"
+                          aria-invalid={nameInvalid || undefined}
+                          aria-describedby={nameInvalid ? `${hintIdBase}-name-hint` : undefined}
+                          className={`w-full rounded-[12px] border px-[16px] py-[18px] text-[20px] font-light leading-[26px] tracking-[-0.8px] text-[#514e4e] outline-none transition-colors placeholder:text-[#8b8c94] lg:text-[20px] lg:tracking-[-0.96px] ${nameInvalid ? 'border-[#c53030] focus:border-[#c53030]' : 'border-[#d1cfd7] focus:border-[#768c5e]'}`}
+                        />
+                      </div>
                       {nameInvalid && (
                         <FieldHint id={`${hintIdBase}-name-hint`}>Укажите имя и фамилию</FieldHint>
                       )}
@@ -462,23 +467,25 @@ export default function Form() {
 
                         {/* Partner name (conditional) */}
                         {form.withPartner === 'yes' && (
-                          <div className="flex flex-col gap-[10px]" {...(partnerNameInvalid ? { 'data-form-error': '' } : {})}>
-                            <label
-                              htmlFor={`${hintIdBase}-partner-name-input`}
-                              className="text-[20px] font-medium leading-[26px] tracking-[-0.8px] text-[#514e4e] lg:text-[20px] lg:leading-[34px] lg:tracking-[-0.96px]"
-                            >
-                              Как зовут вашего партнёра?
-                            </label>
-                            <input
-                              id={`${hintIdBase}-partner-name-input`}
-                              type="text"
-                              value={form.partnerName}
-                              onChange={setInput('partnerName')}
-                              placeholder="Имя и фамилия вашего партнёра"
-                              aria-invalid={partnerNameInvalid || undefined}
-                              aria-describedby={partnerNameInvalid ? `${hintIdBase}-partner-name-hint` : undefined}
-                              className={`w-full min-w-0 rounded-[12px] border px-[12px] py-[18px] text-[20px] font-light leading-[26px] tracking-[-0.8px] text-[#514e4e] outline-none transition-colors placeholder:text-[17px] placeholder:leading-[1.35] placeholder:tracking-[-0.04em] placeholder:text-[#8b8c94] lg:px-[16px] lg:text-[20px] lg:placeholder:text-[20px] lg:placeholder:leading-[26px] lg:placeholder:tracking-[-0.96px] lg:tracking-[-0.96px] ${partnerNameInvalid ? 'border-[#c53030] focus:border-[#c53030]' : 'border-[#d1cfd7] focus:border-[#768c5e]'}`}
-                            />
+                          <div className="flex flex-col" {...(partnerNameInvalid ? { 'data-form-error': '' } : {})}>
+                            <div className="flex flex-col gap-[10px]">
+                              <label
+                                htmlFor={`${hintIdBase}-partner-name-input`}
+                                className="text-[20px] font-medium leading-[26px] tracking-[-0.8px] text-[#514e4e] lg:text-[20px] lg:leading-[34px] lg:tracking-[-0.96px]"
+                              >
+                                Как зовут вашего партнёра?
+                              </label>
+                              <input
+                                id={`${hintIdBase}-partner-name-input`}
+                                type="text"
+                                value={form.partnerName}
+                                onChange={setInput('partnerName')}
+                                placeholder="Имя и фамилия вашего партнёра"
+                                aria-invalid={partnerNameInvalid || undefined}
+                                aria-describedby={partnerNameInvalid ? `${hintIdBase}-partner-name-hint` : undefined}
+                                className={`w-full min-w-0 rounded-[12px] border px-[12px] py-[18px] text-[20px] font-light leading-[26px] tracking-[-0.8px] text-[#514e4e] outline-none transition-colors placeholder:text-[17px] placeholder:leading-[1.35] placeholder:tracking-[-0.04em] placeholder:text-[#8b8c94] lg:px-[16px] lg:text-[20px] lg:placeholder:text-[20px] lg:placeholder:leading-[26px] lg:placeholder:tracking-[-0.96px] lg:tracking-[-0.96px] ${partnerNameInvalid ? 'border-[#c53030] focus:border-[#c53030]' : 'border-[#d1cfd7] focus:border-[#768c5e]'}`}
+                              />
+                            </div>
                             {partnerNameInvalid && (
                               <FieldHint id={`${hintIdBase}-partner-name-hint`}>Укажите имя и фамилию партнёра</FieldHint>
                             )}
