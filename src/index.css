@@ -21,6 +21,8 @@
 :root {
   background-color: #f6f4f1;
   color: #514e4e;
+  /* Figma --Text_green (Main_text_frame) */
+  --Text_green: #768c5e;
 }
 
 * {
