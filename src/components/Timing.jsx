@@ -1,3 +1,4 @@
+import { motion, useReducedMotion } from 'framer-motion';
 import { asset } from '../utils/assets';
 
 const schedule = [
@@ -8,17 +9,42 @@ const schedule = [
   { time: '23:00', label: 'Трансфер', side: 'left' },
 ];
 
-function TimelineItem({ time, label, align = 'left' }) {
+const timingEase = [0.22, 1, 0.36, 1];
+
+function TimelineItem({ time, label, align = 'left', index = 0 }) {
+  const reduce = useReducedMotion();
+  const fromX = align === 'left' ? -48 : 48;
   return (
-    <div className={align === 'right' ? 'text-right' : 'text-left'}>
+    <motion.div
+      className={align === 'right' ? 'text-right' : 'text-left'}
+      initial={reduce ? { opacity: 1, x: 0 } : { opacity: 0, x: fromX }}
+      whileInView={{ opacity: 1, x: 0 }}
+      viewport={{ once: true, amount: 0.22, margin: '0px 0px -12% 0px' }}
+      transition={
+        reduce
+          ? { duration: 0 }
+          : { duration: 0.78, delay: index * 0.09, ease: timingEase }
+      }
+    >
       <p className="font-serif font-semibold text-[42px] lg:text-[50px] leading-[48px] lg:leading-[56px] text-white tracking-[-0.42px] lg:tracking-[-0.5px]">
         {time}
       </p>
       <p className="text-[20px] pt-[4px] lg:text-[28px] leading-[26px] lg:leading-[38px] text-white font-light tracking-[-0.8px] lg:tracking-[-1.12px]">
         {label}
       </p>
-      <div className="w-full h-px bg-white/30 mt-[8px]" />
-    </div>
+      <motion.div
+        className="mt-[8px] h-px w-full bg-white/30"
+        initial={reduce ? { scaleX: 1 } : { scaleX: 0 }}
+        whileInView={{ scaleX: 1 }}
+        viewport={{ once: true, amount: 0.2 }}
+        style={{ transformOrigin: align === 'right' ? 'right' : 'left' }}
+        transition={
+          reduce
+            ? { duration: 0 }
+            : { duration: 0.55, delay: index * 0.09 + 0.12, ease: timingEase }
+        }
+      />
+    </motion.div>
   );
 }
 
@@ -31,6 +57,8 @@ function Dot() {
 }
 
 export default function Timing() {
+  const reduce = useReducedMotion();
+
   return (
     <section className="relative w-full bg-[#768c5e] overflow-hidden mt-[90px] lg:mt-[100px]">
       {/* BG texture */}
@@ -69,13 +97,41 @@ export default function Timing() {
       {/* Content — centered vertically */}
       <div className="relative z-20 flex flex-col items-center justify-center pt-[32px] pb-[56px] px-[16px] lg:pt-[40px] lg:pb-[56px] lg:px-0">
         {/* Header with pearls */}
-        <div className="flex items-center justify-center gap-[18px] lg:gap-[18px] mb-[40px] lg:mb-0">
-          <img src={asset('MultiBlock_Pearl.png')} alt="" className="w-[32px] h-[32px]" />
+        <motion.div
+          className="mb-[40px] flex items-center justify-center gap-[18px] lg:mb-0 lg:gap-[18px]"
+          initial={reduce ? { opacity: 1, y: 0 } : { opacity: 0, y: 22 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.45 }}
+          transition={
+            reduce ? { duration: 0 } : { duration: 0.9, ease: timingEase }
+          }
+        >
+          <motion.img
+            src={asset('MultiBlock_Pearl.png')}
+            alt=""
+            className="h-[32px] w-[32px]"
+            initial={reduce ? { scale: 1, opacity: 1 } : { scale: 0.6, opacity: 0 }}
+            whileInView={{ scale: 1, opacity: 1 }}
+            viewport={{ once: true, amount: 0.45 }}
+            transition={
+              reduce ? { duration: 0 } : { duration: 0.55, delay: 0.08, ease: timingEase }
+            }
+          />
           <h2 className="font-serif font-semibold text-[56px] lg:text-[74px] leading-[56px] lg:leading-[80px] text-white tracking-[-1.68px] lg:tracking-[-2.22px]">
             Тайминг
           </h2>
-          <img src={asset('MultiBlock_Pearl.png')} alt="" className="w-[32px] h-[32px]" />
-        </div>
+          <motion.img
+            src={asset('MultiBlock_Pearl.png')}
+            alt=""
+            className="h-[32px] w-[32px]"
+            initial={reduce ? { scale: 1, opacity: 1 } : { scale: 0.6, opacity: 0 }}
+            whileInView={{ scale: 1, opacity: 1 }}
+            viewport={{ once: true, amount: 0.45 }}
+            transition={
+              reduce ? { duration: 0 } : { duration: 0.55, delay: 0.18, ease: timingEase }
+            }
+          />
+        </motion.div>
 
         {/* Desktop timeline — alternating sides */}
         <div className="hidden lg:block relative w-[500px] h-[632px] mt-[72px]">
@@ -99,13 +155,13 @@ export default function Timing() {
               style={{ top: `${i * 110}px` }}
             >
               {item.side === 'left' ? (
-                <TimelineItem time={item.time} label={item.label} align="left" />
+                <TimelineItem time={item.time} label={item.label} align="left" index={i} />
               ) : (
                 <div />
               )}
 
               {item.side === 'right' ? (
-                <TimelineItem time={item.time} label={item.label} align="right" />
+                <TimelineItem time={item.time} label={item.label} align="right" index={i} />
               ) : (
                 <div />
               )}
@@ -136,13 +192,13 @@ export default function Timing() {
               style={{ minHeight: i < schedule.length - 1 ? '140px' : 'auto' }}
             >
               {item.side === 'left' ? (
-                <TimelineItem time={item.time} label={item.label} align="left" />
+                <TimelineItem time={item.time} label={item.label} align="left" index={i} />
               ) : (
                 <div />
               )}
 
               {item.side === 'right' ? (
-                <TimelineItem time={item.time} label={item.label} align="right" />
+                <TimelineItem time={item.time} label={item.label} align="right" index={i} />
               ) : (
                 <div />
               )}

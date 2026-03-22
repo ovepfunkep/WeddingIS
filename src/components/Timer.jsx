@@ -1,5 +1,7 @@
 import { Fragment, useEffect, useState } from 'react';
+import { motion, useReducedMotion } from 'framer-motion';
 import { asset } from '../utils/assets';
+import { EASE, VIEWPORT } from '../motionPresets';
 
 /** До 24 августа текущего года, 15:00 (локальное время устройства). */
 function getWeddingDate() {
@@ -58,6 +60,7 @@ function PearlSeparator({ mobile }) {
 }
 
 export default function Timer() {
+  const reduceMotion = useReducedMotion();
   const [diff, setDiff] = useState(getDiff());
 
   function getDiff() {
@@ -105,16 +108,38 @@ export default function Timer() {
 
       <div className="relative z-10 flex h-full flex-col items-center justify-center px-[16px] pb-[56px] pt-[32px] lg:pt-[40px]">
         {/* Заголовок: глобально h2 { margin: 0 } — отступ до таймера задаём mt у блока ниже */}
-        <h2 className="max-w-[786px] text-center font-serif text-[56px] font-semibold leading-[56px] tracking-[-1.68px] text-white lg:text-[74px] lg:leading-[80px] lg:tracking-[-2.22px]">
+        <motion.h2
+          className="max-w-[786px] text-center font-serif text-[56px] font-semibold leading-[56px] tracking-[-1.68px] text-white lg:text-[74px] lg:leading-[80px] lg:tracking-[-2.22px]"
+          initial={reduceMotion ? { opacity: 1, y: 0 } : { opacity: 0, y: 22 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={VIEWPORT}
+          transition={
+            reduceMotion ? { duration: 0 } : { duration: 0.9, ease: EASE }
+          }
+        >
           До&nbsp;следующего уровня осталось
-        </h2>
+        </motion.h2>
 
         {/* Мобилка: как в Figma — flex, justify-between, align-items: flex-end; ширина 350px, по бокам 20px */}
         <div className="mt-[70px] flex w-full max-w-[350px] items-end justify-between px-[20px] lg:hidden">
           {mobileUnits.map((unit, i) => (
             <Fragment key={unit.label}>
               {/* ~3 цифры × 42px Cormorant — фикс. ширина, без сдвига при смене числа */}
-              <div className="flex w-[92px] shrink-0 flex-col items-center gap-[12px] text-center">
+              <motion.div
+                className="flex w-[92px] shrink-0 flex-col items-center gap-[12px] text-center"
+                initial={
+                  reduceMotion
+                    ? { opacity: 1, y: 0 }
+                    : { opacity: 0, y: 28 }
+                }
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={VIEWPORT}
+                transition={
+                  reduceMotion
+                    ? { duration: 0 }
+                    : { duration: 0.8, delay: 0.1 + i * 0.1, ease: EASE }
+                }
+              >
                 <p
                   className="w-full font-serif text-[42px] font-semibold not-italic leading-[32px] tracking-[-0.42px] text-white"
                   style={TIMER_DIGIT_FONT}
@@ -124,7 +149,7 @@ export default function Timer() {
                 <p className="text-center font-sans text-[20px] font-light not-italic leading-[20px] tracking-[-0.8px] text-white">
                   {unit.label}
                 </p>
-              </div>
+              </motion.div>
               {i < mobileUnits.length - 1 && <PearlSeparator mobile />}
             </Fragment>
           ))}
@@ -135,7 +160,21 @@ export default function Timer() {
           {units.map((unit, i) => (
             <Fragment key={unit.label}>
               {/* ~3 цифры × 56px — фикс. ширина колонки */}
-              <div className="flex w-[148px] shrink-0 flex-col items-center gap-[12px] text-center text-white">
+              <motion.div
+                className="flex w-[148px] shrink-0 flex-col items-center gap-[12px] text-center text-white"
+                initial={
+                  reduceMotion
+                    ? { opacity: 1, y: 0 }
+                    : { opacity: 0, y: 32 }
+                }
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={VIEWPORT}
+                transition={
+                  reduceMotion
+                    ? { duration: 0 }
+                    : { duration: 0.82, delay: 0.08 + i * 0.09, ease: EASE }
+                }
+              >
                 <p
                   className="w-full font-serif text-[56px] font-semibold not-italic leading-[42px] tracking-[-0.56px] text-white"
                   style={TIMER_DIGIT_FONT}
@@ -148,17 +187,27 @@ export default function Timer() {
                 >
                   {unit.label}
                 </p>
-              </div>
+              </motion.div>
               {i < units.length - 1 && <PearlSeparator mobile={false} />}
             </Fragment>
           ))}
         </div>
 
         {/* Bottom text */}
-        <div className="mt-[70px] text-center text-[24px] leading-[34px] tracking-[-0.96px] text-white lg:mt-[100px]">
+        <motion.div
+          className="mt-[70px] text-center text-[24px] leading-[34px] tracking-[-0.96px] text-white lg:mt-[100px]"
+          initial={reduceMotion ? { opacity: 1, y: 0 } : { opacity: 0, y: 18 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={VIEWPORT}
+          transition={
+            reduceMotion
+              ? { duration: 0 }
+              : { duration: 0.85, delay: 0.25, ease: EASE }
+          }
+        >
           <p className="font-light">Спасибо, что вы&nbsp;с&nbsp;нами</p>
           <p className="italic">Это будет наш лучший день</p>
-        </div>
+        </motion.div>
       </div>
     </section>
   );

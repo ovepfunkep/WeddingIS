@@ -1,8 +1,10 @@
 import { useState, useRef, useLayoutEffect, useEffect, useId, useMemo } from 'react';
+import { motion, useReducedMotion } from 'framer-motion';
 import { asset } from '../utils/assets';
 import { RSVP_FORM_INITIAL } from '../constants/rsvpFormInitial';
 import { loadPersistedRsvp, savePersistedRsvp } from '../utils/rsvpLocalStorage';
 import { isGoogleRsvpConfigured, submitRsvpToGoogle } from '../utils/rsvpGoogle';
+import { EASE, VIEWPORT } from '../motionPresets';
 
 function FieldHint({ children, id }) {
   if (!children) return null;
@@ -114,6 +116,7 @@ export default function Form() {
   const [submitAttempted, setSubmitAttempted] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState('');
+  const reduceMotion = useReducedMotion();
 
   const set = (key) => (val) => setForm((p) => ({ ...p, [key]: val }));
   const setInput = (key) => (e) => setForm((p) => ({ ...p, [key]: e.target.value }));
@@ -363,25 +366,49 @@ export default function Form() {
       <section className="pt-[60px] lg:pt-[120px] w-full max-w-[990px] mx-auto">
         {/* Header — мобилка: 16px от края экрана; десктоп: как раньше */}
         <div className="px-[16px] lg:px-[32px]">
-          <div className="text-center mb-[48px] lg:mb-[48px] max-w-[788px] mx-auto flex flex-col gap-[20px]">
+          <motion.div
+            className="text-center mb-[48px] lg:mb-[48px] max-w-[788px] mx-auto flex flex-col gap-[20px]"
+            initial={reduceMotion ? { opacity: 1, y: 0 } : { opacity: 0, y: 24 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={VIEWPORT}
+            transition={
+              reduceMotion ? { duration: 0 } : { duration: 0.95, ease: EASE }
+            }
+          >
             <h2 className="font-serif font-semibold text-[56px] lg:text-[74px] leading-[56px] lg:leading-[80px] text-[#768c5e] tracking-[-1.68px] lg:tracking-[-2.22px]">
               Вы&nbsp;выбираете быть с&nbsp;нами в&nbsp;этот день?
             </h2>
-            <p className="text-[20px] lg:text-[24px] leading-[28px] lg:leading-[34px] text-[#514e4e] tracking-[-0.8px] lg:tracking-[-0.96px]">
+            <motion.p
+              className="text-[20px] lg:text-[24px] leading-[28px] lg:leading-[34px] text-[#514e4e] tracking-[-0.8px] lg:tracking-[-0.96px]"
+              initial={reduceMotion ? { opacity: 1, y: 0 } : { opacity: 0, y: 16 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={VIEWPORT}
+              transition={
+                reduceMotion
+                  ? { duration: 0 }
+                  : { duration: 0.85, delay: 0.12, ease: EASE }
+              }
+            >
               <span className="font-light">Пожалуйста, подтвердите своё присутствие до&nbsp;</span>
-              <span className="font-medium">1 июля, </span>
+              <span className="font-medium">1 июня, </span>
               <span className="font-light">заполнив анкету. Это поможет нам лучше подготовиться к&nbsp;вечеру</span>
-            </p>
-          </div>
+            </motion.p>
+          </motion.div>
         </div>
 
         {/* Форма — мобилка: 8px от края экрана; десктоп: прежние боковые отступы секции */}
         <div className="px-[8px] lg:px-[32px]">
-          <form
+          <motion.form
             ref={formRef}
             onSubmit={handleSubmit}
             aria-busy={submitting || undefined}
             className="relative bg-white rounded-[40px] lg:rounded-[80px] shadow-[0_0_10px_rgba(72,80,92,0.1)] px-[20px] py-[28px] lg:pl-[150px] lg:pr-[120px] lg:py-[60px] flex flex-col gap-[32px] lg:gap-[48px] lg:items-start"
+            initial={reduceMotion ? { opacity: 1, y: 0, scale: 1 } : { opacity: 0, y: 36, scale: 0.98 }}
+            whileInView={{ opacity: 1, y: 0, scale: 1 }}
+            viewport={VIEWPORT}
+            transition={
+              reduceMotion ? { duration: 0 } : { duration: 1, delay: 0.08, ease: EASE }
+            }
           >
             {/* Десктоп: дырки от верха до низа дорожки, равные промежутки (justify-between); число — по высоте (ResizeObserver) */}
             {!submitted && (
@@ -685,7 +712,7 @@ export default function Form() {
                 </div>
               </div>
             )}
-          </form>
+          </motion.form>
         </div>
       </section>
     </>

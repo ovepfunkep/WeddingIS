@@ -8,20 +8,41 @@ import DressCode from './components/DressCode';
 import ImportantInfo from './components/ImportantInfo';
 import Form from './components/Form';
 import Timer from './components/Timer';
+import SectionReveal from './components/SectionReveal';
 
 export default function App() {
   return (
     <main className="min-h-screen bg-[#f6f4f1] overflow-x-hidden selection:bg-[#768c5e] selection:text-white">
-      <Banner />
-      <PearlDivider />
-      <Invitation />
-      <History />
-      <Location />
-      <Timing />
-      <DressCode />
-      <ImportantInfo />
-      <Form />
-      <Timer />
+      <SectionReveal className="w-full">
+        <Banner />
+      </SectionReveal>
+      <SectionReveal className="w-full">
+        <PearlDivider />
+      </SectionReveal>
+      <SectionReveal className="w-full">
+        <Invitation />
+      </SectionReveal>
+      <SectionReveal className="w-full">
+        <History />
+      </SectionReveal>
+      <SectionReveal className="w-full">
+        <Location />
+      </SectionReveal>
+      <SectionReveal className="w-full">
+        <Timing />
+      </SectionReveal>
+      <SectionReveal className="w-full">
+        <DressCode />
+      </SectionReveal>
+      <SectionReveal className="w-full">
+        <ImportantInfo />
+      </SectionReveal>
+      <SectionReveal className="w-full">
+        <Form />
+      </SectionReveal>
+      <SectionReveal className="w-full">
+        <Timer />
+      </SectionReveal>
     </main>
   );
 }
