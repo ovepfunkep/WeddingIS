@@ -64,11 +64,22 @@ function CheckboxGroup({ values, onChange, options, hasError, hint, hintId }) {
           const checked = values.includes(opt.value);
           return (
             <label key={opt.value} className="flex cursor-pointer items-center gap-[8px] py-[8px] group">
-              <span className="relative h-[24px] w-[24px] shrink-0">
-                <span className={`absolute inset-[2px] rounded-[4px] transition-colors ${checked ? 'bg-[#768c5e]' : 'border border-[#d1cfd7] bg-white'
-                  }`} />
+              {/* flex + center вместо absolute/inset — стабильно на моб. Safari */}
+              <span
+                className={`flex h-[24px] w-[24px] shrink-0 items-center justify-center rounded-[4px] transition-colors ${checked ? 'bg-[#768c5e]' : 'border border-[#d1cfd7] bg-white'
+                  }`}
+              >
                 {checked && (
-                  <svg className="absolute inset-[4px] text-white" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <svg
+                    className="h-[14px] w-[14px] shrink-0 text-white"
+                    viewBox="0 0 16 16"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2.5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    aria-hidden
+                  >
                     <path d="M3 8l3.5 3.5L13 5" />
                   </svg>
                 )}
