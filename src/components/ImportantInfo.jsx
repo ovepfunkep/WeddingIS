@@ -1,4 +1,6 @@
+import { motion, useReducedMotion } from 'framer-motion';
 import { asset } from '../utils/assets';
+import { EASE, VIEWPORT } from '../motionPresets';
 
 /**
  * Ручная подгонка мобильных картинок в «Важной информации».
@@ -76,15 +78,33 @@ function InfoBlockMobile({
 }
 
 export default function ImportantInfo() {
+  const reduce = useReducedMotion();
+  const infoBlock = (i) => ({
+    initial: reduce
+      ? { opacity: 1, y: 0, x: 0 }
+      : { opacity: 0, y: 44, x: i % 2 === 0 ? -28 : 28 },
+    whileInView: { opacity: 1, y: 0, x: 0 },
+    viewport: VIEWPORT,
+    transition: reduce
+      ? { duration: 0 }
+      : { duration: 0.95, delay: i * 0.05, ease: EASE },
+  });
+
   return (
     <section className="pt-[90px] lg:pt-[120px] max-w-[1440px] mx-auto px-[16px] lg:px-[124px]">
-      <h2 className="font-serif font-semibold text-[56px] lg:text-[74px] leading-[56px] lg:leading-[80px] text-[#768c5e] tracking-[-1.68px] lg:tracking-[-2.22px] text-center mb-[32px] lg:mb-[48px]">
+      <motion.h2
+        className="font-serif font-semibold text-[56px] lg:text-[74px] leading-[56px] lg:leading-[80px] text-[#768c5e] tracking-[-1.68px] lg:tracking-[-2.22px] text-center mb-[32px] lg:mb-[48px]"
+        initial={reduce ? { opacity: 1, y: 0 } : { opacity: 0, y: 28 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={VIEWPORT}
+        transition={reduce ? { duration: 0 } : { duration: 0.9, ease: EASE }}
+      >
         Важная информация
-      </h2>
+      </motion.h2>
 
       <div className="flex pt-[48px] flex-col gap-[64px] lg:gap-[56px]">
         {/* Block 1: Формат мероприятия + Dino */}
-        <div>
+        <motion.div {...infoBlock(0)}>
           <InfoBlockMobile
             align="left"
             title="Формат мероприятия"
@@ -112,10 +132,10 @@ export default function ImportantInfo() {
               <img src={asset('Block7_dino.png')} alt="" className="w-full h-auto object-contain max-h-[356px]" />
             </div>
           </div>
-        </div>
+        </motion.div>
 
         {/* Block 2: Подарки + Gift card */}
-        <div>
+        <motion.div {...infoBlock(1)}>
           <InfoBlockMobile
             align="right"
             title="Подарки"
@@ -149,10 +169,10 @@ export default function ImportantInfo() {
               </div>
             </div>
           </div>
-        </div>
+        </motion.div>
 
         {/* Block 3: Цветы + Kitty */}
-        <div>
+        <motion.div {...infoBlock(2)}>
           <InfoBlockMobile
             align="left"
             title="Цветы"
@@ -184,10 +204,10 @@ export default function ImportantInfo() {
               <img src={asset('Block7_kitty.png')} alt="" className="w-full h-auto object-contain max-h-[337px]" />
             </div>
           </div>
-        </div>
+        </motion.div>
 
         {/* Block 4: Трансфер + Branch */}
-        <div>
+        <motion.div {...infoBlock(3)}>
           <InfoBlockMobile
             align="right"
             title="Трансфер"
@@ -225,7 +245,7 @@ export default function ImportantInfo() {
               </div>
             </div>
           </div>
-        </div>
+        </motion.div>
       </div>
     </section>
   );
