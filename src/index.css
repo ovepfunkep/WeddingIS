@@ -9,6 +9,8 @@
   --color-wedding-beige: #F5F5DC;
   --color-wedding-silver: #C0C0C0;
   --color-wedding-pink: #DB7093;
+  /* Figma variable --text_green / Main_text_frame */
+  --color-text-green: #768c5e;
 
   --font-serif: "Cormorant Garamond", serif;
   --font-sans: "Inter", sans-serif;

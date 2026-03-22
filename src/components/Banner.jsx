@@ -3,41 +3,65 @@ import { asset } from '../utils/assets';
 export default function Banner() {
   return (
     <section className="relative w-full overflow-hidden bg-[#FDFBF7]">
-      <div className="relative flex items-center justify-center min-h-[500px] md:min-h-[700px] lg:min-h-[766px] py-12 md:py-0">
-        {/* Background floral bows */}
+      <div className="relative min-h-[778px] md:min-h-[700px] lg:min-h-[766px]">
+        {/* Background floral bows — full bleed */}
         <img
           src={asset('Block1_Background.png')}
           alt=""
-          className="absolute inset-0 w-full h-full object-cover pointer-events-none opacity-50 left-[200px] md:left-0"
+          className="absolute inset-0 w-full h-full object-cover pointer-events-none"
         />
 
-        {/* Pendant (top-left) */}
-        <img
-          src={asset('Block1_Pendant.png')}
-          alt=""
-          className="absolute left-[-38px] md:left-6 lg:left-[190px] top-[-30px] md:top-[-60px] lg:top-[0px] w-[250px] md:w-[260px] lg:w-[380px] object-contain pointer-events-none z-30 drop-shadow-lg"
-        />
+        {/* Mobile 384px frame so Figma coords (e.g. polaroid left 197) match */}
+        <div className="relative mx-auto min-h-[778px] w-full max-w-[384px] md:max-w-none md:min-h-[700px] lg:min-h-[766px]">
+          {/* Pendant (top-left) — mobile position unchanged vs Figma */}
+          <img
+            src={asset('Block1_Pendant.png')}
+            alt=""
+            className="pointer-events-none absolute left-[-42px] top-[-58px] z-30 h-72 w-72 origin-top-left rotate-[7.09deg] object-contain drop-shadow-lg md:h-80 md:w-80 md:left-[calc(50%-min(550px,50%)-40px)] lg:top-[-78px] lg:h-[420px] lg:w-[420px]"
+          />
 
-        {/* Polaroid (bottom-right) */}
-        <img
-          src={asset('Block1_Polaroid.png')}
-          alt=""
-          className="absolute right-[-20px] md:right-0 lg:right-[160px] bottom-[-10px] md:bottom-[10px] w-[100px] md:w-[220px] lg:w-[330px] object-contain pointer-events-none z-30"
-        />
+          {/* Polaroid — mobile: позиция по макету; наклон уменьшен — в PNG уже есть угол кадра */}
+          {/* md: только right — не задавать left одновременно с right, иначе ширина = right−left и блок сжимается */}
+          <div className="pointer-events-none absolute left-[210px] top-[560px] z-30 md:left-[calc(50%+min(200px,50%))] md:top-auto md:bottom-[10px] lg:left-[calc(50%+min(250px,50%))]">
+            <div className="flex h-[218px] w-[193px] items-center justify-center md:w-[220px] lg:w-[330px] md:justify-end">
+              <img
+                src={asset('Block1_Polaroid.png')}
+                alt=""
+                className="h-[217px] w-[192px] object-contain md:h-[360px] md:w-[330px] lg:w-[330px]"
+              />
+            </div>
+          </div>
 
-        {/* Main text frame */}
-        <div className="relative z-20 bg-[#768c5e] mx-4 md:mx-8 px-6 py-8 md:px-16 md:py-12 lg:px-[100px] lg:py-[80px] rounded-[30px] md:rounded-[40px] flex flex-col items-center gap-6 md:gap-8 shadow-xl max-w-[900px] w-full">
-          <h1 className="font-serif font-semibold text-[42px] md:text-[72px] lg:text-[96px] leading-[1.05] text-white tracking-[-0.03em] text-center">
-            Иван и София
-          </h1>
-          <div className="w-32 md:w-[279px] h-px bg-white/40" />
-          <p className="font-serif text-[36px] md:text-[52px] lg:text-[62px] leading-[0.9] text-white tracking-[-0.03em] text-center">
-            24.08.2026
-          </p>
-          <div className="w-32 md:w-[279px] h-px bg-white/40" />
-          <p className="font-infant italic text-[24px] md:text-[40px] lg:text-[56px] text-white tracking-[-0.01em] text-center leading-normal">
-            «Я выбираю тебя каждый день»
-          </p>
+          {/* Main text frame — Figma 232:894 */}
+          <div className="absolute left-1/2 top-[calc(50%-25px)] z-20 flex w-full max-w-[358px] -translate-x-1/2 -translate-y-1/2 flex-col items-center gap-8 rounded-[40px] bg-text-green px-4 py-[70px] shadow-xl md:max-w-[600px] md:px-16 md:py-12 lg:max-w-[900px] lg:px-[100px] lg:py-[80px]">
+            <h1 className="self-stretch text-center font-serif text-[56px] font-semibold leading-[62px] tracking-[-1.68px] text-white md:text-[72px] md:leading-[1.05] md:tracking-[-0.03em] lg:text-[96px] lg:leading-[100px]">
+              Иван и София
+            </h1>
+            <div className="w-[279px] shrink-0">
+              <img
+                src={asset('Block1_Line.svg')}
+                alt=""
+                width={279}
+                height={1}
+                className="block h-px w-full max-w-none"
+              />
+            </div>
+            <p className="self-stretch text-center font-serif text-[48px] font-normal leading-[54px] tracking-[-1.44px] text-white md:text-[52px] md:leading-[0.9] md:tracking-[-0.03em] lg:text-[62px] lg:leading-[56px]">
+              24.08.2026
+            </p>
+            <div className="w-[279px] shrink-0">
+              <img
+                src={asset('Block1_Line.svg')}
+                alt=""
+                width={279}
+                height={1}
+                className="block h-px w-full max-w-none"
+              />
+            </div>
+            <p className="font-infant self-stretch text-center text-[42px] font-normal italic leading-normal tracking-[-1.26px] text-white md:text-[40px] md:tracking-[-0.01em] lg:text-[56px]">
+              «Я выбираю тебя каждый день»
+            </p>
+          </div>
         </div>
       </div>
     </section>

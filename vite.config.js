@@ -4,5 +4,6 @@ import react from '@vitejs/plugin-react'
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react()],
-  base: '/Wedding2/',
+  // Имя репозитория GitHub Pages: https://<user>.github.io/<repo>/
+  base: '/WeddingIS/',
 })
