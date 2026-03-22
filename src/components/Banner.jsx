@@ -21,12 +21,13 @@ export default function Banner() {
           />
 
           {/* Polaroid — mobile: позиция по макету; наклон уменьшен — в PNG уже есть угол кадра */}
-          <div className="pointer-events-none absolute left-[197px] top-[560px] z-30 md:left-[calc(50%+min(250px,50%)+40px)] md:right-0 md:top-auto md:bottom-[10px] lg:right-auto">
-            <div className="flex h-[218px] w-[193px] items-center justify-center md:h-auto md:w-auto md:justify-end">
+          {/* md: только right — не задавать left одновременно с right, иначе ширина = right−left и блок сжимается */}
+          <div className="pointer-events-none absolute left-[210px] top-[560px] z-30 md:left-[calc(50%+min(200px,50%))] md:top-auto md:bottom-[10px] lg:left-[calc(50%+min(250px,50%))]">
+            <div className="flex h-[218px] w-[193px] items-center justify-center md:w-[220px] lg:w-[330px] md:justify-end">
               <img
                 src={asset('Block1_Polaroid.png')}
                 alt=""
-                className="h-[217px] w-[192px] object-contain md:h-auto md:w-[220px] lg:w-[330px]"
+                className="h-[217px] w-[192px] object-contain md:h-[360px] md:w-[330px] lg:w-[330px]"
               />
             </div>
           </div>
