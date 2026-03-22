@@ -1,5 +1,14 @@
 # Wedding site (React + Vite)
 
+## RSVP (Google Forms)
+
+Анкета на сайте **тихо** отправляет ответы в [Google Form](https://docs.google.com/forms/) через POST на `formResponse` (см. [`src/utils/rsvpGoogle.js`](src/utils/rsvpGoogle.js)).
+
+- Скопируйте [`.env.example`](.env.example) в `.env` и при необходимости поправьте `VITE_GOOGLE_FORM_ID`.
+- В **Google Forms** вопросы про партнёра, трансфер, напитки и пожелания сделайте **необязательными**, чтобы сценарий «К сожалению, не смогу» (только имя и отказ) отправлялся без ошибок.
+- Черновик и факт отправки хранятся в **localStorage** на устройстве (ключ `wedding2-rsvp-v1`); после «Спасибо» можно нажать **«Изменить ответ»** и отправить снова.
+- **GitHub Actions:** в репозитории добавьте секрет **repository secret** `VITE_GOOGLE_FORM_ID` с тем же значением, иначе в продакшен-сборке переменная будет пустой.
+
 ## GitHub Pages
 
 В продакшене **нельзя** отдавать корневой `index.html` с `<script src="/src/main.jsx">` — такого файла на сервере нет. Нужен **результат сборки**:
