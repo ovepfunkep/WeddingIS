@@ -64,23 +64,27 @@ function CheckboxGroup({ values, onChange, options, hasError, hint, hintId }) {
           const checked = values.includes(opt.value);
           return (
             <label key={opt.value} className="flex cursor-pointer items-center gap-[8px] py-[8px] group">
-              {/* flex + center вместо absolute/inset — стабильно на моб. Safari */}
+              {/*
+                Safari iOS: stroke-based SVG в маленьком flex-боксе даёт смещение/обрезку.
+                Fill + block + фикс. размер + translateZ(0) — стабильное центрирование.
+              */}
               <span
-                className={`flex h-[24px] w-[24px] shrink-0 items-center justify-center rounded-[4px] transition-colors ${checked ? 'bg-[#768c5e]' : 'border border-[#d1cfd7] bg-white'
+                className={`box-border flex h-6 w-6 shrink-0 items-center justify-center self-center rounded-[4px] leading-none transition-colors [transform:translateZ(0)] ${checked ? 'bg-[#768c5e]' : 'border border-[#d1cfd7] bg-white'
                   }`}
               >
                 {checked && (
                   <svg
-                    className="h-[14px] w-[14px] shrink-0 text-white"
-                    viewBox="0 0 16 16"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2.5"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
+                    className="pointer-events-none block h-3 w-3 shrink-0 text-white"
+                    viewBox="0 0 20 20"
+                    fill="currentColor"
+                    xmlns="http://www.w3.org/2000/svg"
                     aria-hidden
                   >
-                    <path d="M3 8l3.5 3.5L13 5" />
+                    <path
+                      fillRule="evenodd"
+                      d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                      clipRule="evenodd"
+                    />
                   </svg>
                 )}
               </span>
