@@ -120,6 +120,8 @@ export default function Form() {
     return p?.submitted ?? false;
   });
   const [transferTooltipOpen, setTransferTooltipOpen] = useState(false);
+  /** На мобилке: тултип под иконкой (не хватило места сверху) — стрелка должна быть сверху панели */
+  const [transferTooltipMobileBelow, setTransferTooltipMobileBelow] = useState(false);
   const drinkWishesRef = useRef(null);
   const transferTooltipRef = useRef(null);
   const transferInfoBtnRef = useRef(null);
@@ -293,13 +295,17 @@ export default function Form() {
       left = Math.max(pad, Math.min(left, vw - maxW - pad));
 
       let top = btnR.top - tipH - gap;
+      let openedBelow = false;
       if (top < pad) {
+        openedBelow = true;
         top = btnR.bottom + gap;
       }
       top = Math.max(pad, Math.min(top, vh - tipH - pad));
 
       panel.style.left = `${left}px`;
       panel.style.top = `${top}px`;
+
+      setTransferTooltipMobileBelow(openedBelow);
 
       // Стрелка в потоке (flex), не absolute — иначе с overflow-x-hidden на main её клипает
       const arrow = transferTooltipArrowRef.current;
@@ -317,6 +323,7 @@ export default function Form() {
 
     if (!mq.matches) {
       resetTransferTooltipPanelStyle();
+      setTransferTooltipMobileBelow(false);
       return;
     }
 
@@ -330,6 +337,7 @@ export default function Form() {
       window.removeEventListener('resize', positionMobile);
       window.removeEventListener('scroll', positionMobile, true);
       resetTransferTooltipPanelStyle();
+      setTransferTooltipMobileBelow(false);
     };
   }, [transferTooltipOpen]);
 
@@ -640,12 +648,14 @@ export default function Form() {
                                   } relative hidden lg:absolute lg:bottom-full lg:left-1/2 lg:mb-[8px] lg:-translate-x-1/2 lg:group-hover:block`}
                                 role="tooltip"
                               >
-                                <div className="w-full min-w-0 rounded-[12px] bg-[#514e4e] px-[16px] py-[12px] text-center text-[14px] leading-[1.4] text-white shadow-lg lg:w-[240px]">
+                                <div
+                                  className={`w-full min-w-0 rounded-[12px] bg-[#514e4e] px-[16px] py-[12px] text-center text-[14px] leading-[1.4] text-white shadow-lg lg:order-1 lg:w-[240px] ${transferTooltipMobileBelow ? 'order-2' : 'order-1'}`}
+                                >
                                   Организованная доставка гостей от&nbsp;города до&nbsp;площадки и&nbsp;обратно
                                 </div>
                                 <div
                                   ref={transferTooltipArrowRef}
-                                  className="z-10 mt-[-4px] h-[8px] w-[8px] shrink-0 rotate-45 bg-[#514e4e] lg:mx-auto"
+                                  className={`z-10 h-[8px] w-[8px] shrink-0 rotate-45 bg-[#514e4e] lg:order-2 lg:mx-auto lg:mb-0 lg:mt-[-4px] ${transferTooltipMobileBelow ? 'order-1 mb-[-4px]' : 'order-2 mt-[-4px]'}`}
                                   aria-hidden
                                 />
                               </div>
