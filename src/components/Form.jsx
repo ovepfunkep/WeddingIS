@@ -1,15 +1,8 @@
 import { useState, useRef, useLayoutEffect, useEffect, useId, useMemo } from 'react';
 import { asset } from '../utils/assets';
-
-const INITIAL = {
-  name: '',
-  attendance: '',
-  withPartner: '',
-  partnerName: '',
-  transfer: '',
-  drinks: [],
-  drinkWishes: '',
-};
+import { RSVP_FORM_INITIAL } from '../constants/rsvpFormInitial';
+import { loadPersistedRsvp, savePersistedRsvp } from '../utils/rsvpLocalStorage';
+import { isGoogleRsvpConfigured, submitRsvpToGoogle } from '../utils/rsvpGoogle';
 
 function FieldHint({ children, id }) {
   if (!children) return null;
@@ -101,8 +94,14 @@ function Divider() {
 }
 
 export default function Form() {
-  const [form, setForm] = useState(INITIAL);
-  const [submitted, setSubmitted] = useState(false);
+  const [form, setForm] = useState(() => {
+    const p = typeof window !== 'undefined' ? loadPersistedRsvp() : null;
+    return p?.form ?? RSVP_FORM_INITIAL;
+  });
+  const [submitted, setSubmitted] = useState(() => {
+    const p = typeof window !== 'undefined' ? loadPersistedRsvp() : null;
+    return p?.submitted ?? false;
+  });
   const [transferTooltipOpen, setTransferTooltipOpen] = useState(false);
   const drinkWishesRef = useRef(null);
   const transferTooltipRef = useRef(null);
@@ -113,6 +112,8 @@ export default function Form() {
   const hintIdBase = useId().replace(/:/g, '');
 
   const [submitAttempted, setSubmitAttempted] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState('');
 
   const set = (key) => (val) => setForm((p) => ({ ...p, [key]: val }));
   const setInput = (key) => (e) => setForm((p) => ({ ...p, [key]: e.target.value }));
@@ -143,6 +144,19 @@ export default function Form() {
   useEffect(() => {
     if (isFormValid && submitAttempted) setSubmitAttempted(false);
   }, [isFormValid, submitAttempted]);
+
+  /* Черновик на устройстве, пока пользователь не на экране «Спасибо» */
+  useEffect(() => {
+    if (submitted) return;
+    const t = window.setTimeout(() => savePersistedRsvp(form, false), 400);
+    return () => window.clearTimeout(t);
+  }, [form, submitted]);
+
+  const handleEditAnswer = () => {
+    setSubmitted(false);
+    setSubmitAttempted(false);
+    savePersistedRsvp(form, false);
+  };
 
   /** Целевой шаг между дырками (px). Число дырок подбираем так, чтобы при justify-between промежутки были близки к этому значению. */
   const HOLE_DESKTOP_PX = 34;
@@ -309,7 +323,7 @@ export default function Form() {
     }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!isFormValid) {
       setSubmitAttempted(true);
@@ -319,7 +333,29 @@ export default function Form() {
       return;
     }
     setSubmitAttempted(false);
-    setSubmitted(true);
+    setSubmitError('');
+
+    if (!isGoogleRsvpConfigured()) {
+      if (import.meta.env.DEV) {
+        console.warn('[RSVP] Задайте VITE_GOOGLE_FORM_ID в .env — ответ не отправлен в Google.');
+        setSubmitted(true);
+        savePersistedRsvp(form, true);
+        return;
+      }
+      setSubmitError('Отправка анкеты не настроена. Напишите организаторам.');
+      return;
+    }
+
+    setSubmitting(true);
+    try {
+      await submitRsvpToGoogle(form);
+      setSubmitted(true);
+      savePersistedRsvp(form, true);
+    } catch {
+      setSubmitError('Не удалось отправить анкету. Попробуйте ещё раз или напишите нам напрямую.');
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -344,6 +380,7 @@ export default function Form() {
           <form
             ref={formRef}
             onSubmit={handleSubmit}
+            aria-busy={submitting || undefined}
             className="relative bg-white rounded-[40px] lg:rounded-[80px] shadow-[0_0_10px_rgba(72,80,92,0.1)] px-[20px] py-[28px] lg:pl-[150px] lg:pr-[120px] lg:py-[60px] flex flex-col gap-[32px] lg:gap-[48px] lg:items-start"
           >
             {/* Десктоп: дырки от верха до низа дорожки, равные промежутки (justify-between); число — по высоте (ResizeObserver) */}
@@ -367,7 +404,7 @@ export default function Form() {
             )}
 
             {submitted ? (
-              <div className="flex w-full flex-col items-center justify-center gap-[12px] py-[24px] lg:py-[40px] text-center">
+              <div className="flex w-full flex-col items-center justify-center gap-[20px] py-[24px] lg:py-[40px] text-center">
                 <h2 className="font-serif font-semibold text-[42px] lg:text-[74px] leading-[1.08] text-[#768c5e] tracking-[-0.03em]">
                   Спасибо!
                 </h2>
@@ -376,6 +413,13 @@ export default function Form() {
                     ? 'Ваш ответ записан. Мы очень ждём вас!'
                     : 'Ваш ответ записан. Мы будем скучать!'}
                 </p>
+                <button
+                  type="button"
+                  onClick={handleEditAnswer}
+                  className="mt-[4px] rounded-full border-2 border-[#768c5e] bg-white px-[24px] py-[14px] text-[18px] font-light leading-[26px] text-[#768c5e] tracking-[-0.04em] transition-colors hover:bg-[#768c5e]/10"
+                >
+                  Изменить ответ
+                </button>
               </div>
             ) : (
               <div className="flex w-full max-w-full flex-col gap-[32px] lg:max-w-[720px] lg:gap-[48px]">
@@ -621,12 +665,24 @@ export default function Form() {
                   </div>
                 </div>
 
-                <button
-                  type="submit"
-                  className="w-full rounded-full bg-[#768c5e] py-[16px] text-[20px] leading-[26px] text-white transition-colors tracking-[-0.8px] hover:bg-[#6a7f53] active:bg-[#5f7249] lg:text-[20px] lg:tracking-[-0.96px]"
-                >
-                  {form.attendance === 'no' ? 'Продолжить' : 'Подтвердить участие'}
-                </button>
+                <div className="flex w-full flex-col gap-[12px]">
+                  <button
+                    type="submit"
+                    disabled={submitting}
+                    className="w-full rounded-full bg-[#768c5e] py-[16px] text-[20px] leading-[26px] text-white transition-colors tracking-[-0.8px] hover:bg-[#6a7f53] active:bg-[#5f7249] enabled:cursor-pointer disabled:cursor-wait disabled:opacity-70 lg:text-[20px] lg:tracking-[-0.96px]"
+                  >
+                    {submitting
+                      ? 'Отправка…'
+                      : form.attendance === 'no'
+                        ? 'Продолжить'
+                        : 'Подтвердить участие'}
+                  </button>
+                  {submitError ? (
+                    <p className="m-0 text-center text-[14px] leading-[1.4] text-[#c53030] tracking-[-0.02em]" role="alert">
+                      {submitError}
+                    </p>
+                  ) : null}
+                </div>
               </div>
             )}
           </form>
