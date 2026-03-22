@@ -23,6 +23,10 @@ npm run build
 - **Вручную:** `npm run deploy` (gh-pages) — тоже заливает **`dist`**, не исходники.
 - В [`vite.config.js`](vite.config.js) параметр `base` должен совпадать с именем репозитория: `/WeddingIS/` для URL `https://ovepfunkep.github.io/WeddingIS/`. Для сайта **в корне** `https://ovepfunkep.github.io/` задайте `base: '/'`.
 
+### Превью в соцсетях (Open Graph)
+
+Файл картинки: [`public/og-image.png`](public/og-image.png). Мета-теги в [`index.html`](index.html) (`og:image`, `twitter:image`) указывают **полный URL** сайта. Если смените домен или имя репозитория — обновите URL в `index.html` и при необходимости замените картинку (рекомендуемый формат для превью — около **1200×630** px, но подойдёт и другое соотношение).
+
 ---
 
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
