@@ -498,7 +498,7 @@ export default function Form() {
                         <div className="flex flex-col gap-[16px]" {...(transferInvalid ? { 'data-form-error': '' } : {})}>
                           <div className="flex items-center gap-[8px]">
                             <p className="text-[20px] leading-[26px] lg:leading-[34px] lg:text-[20px] font-medium text-[#514e4e] tracking-[-0.8px] lg:tracking-[-0.96px]">
-                              Нужен ли вам трансфер
+                              Нужен ли вам трансфер?
                             </p>
                             {/* Info: мобилка — клик, закрытие снаружи или через 5 с; десктоп — hover */}
                             <div ref={transferTooltipRef} className="group relative inline-flex shrink-0 items-center">
@@ -605,14 +605,14 @@ export default function Form() {
                         {/* Drink wishes — textarea с ростом по высоте, чтобы плейсхолдер и текст переносились целиком */}
                         <div className="flex flex-col gap-[10px]">
                           <p className="text-[20px] leading-[26px] lg:leading-[34px] lg:text-[20px] font-medium text-[#514e4e] tracking-[-0.8px] lg:tracking-[-0.96px]">
-                            Есть ли особые пожелания по напиткам?
+                            Есть ли особые пожелания?
                           </p>
                           <textarea
                             ref={drinkWishesRef}
                             rows={4}
                             value={form.drinkWishes}
                             onChange={setInput('drinkWishes')}
-                            placeholder="Например: если будет апероль — я буду самым счастливым гостем"
+                            placeholder={`Например: «Если будет апероль — я буду самым счастливым гостем» или «У меня аллергия на орехи»`}
                             className="box-border min-h-[140px] w-full resize-none overflow-y-auto border border-[#d1cfd7] rounded-[12px] px-[16px] py-[18px] text-[20px] leading-[26px] text-[#514e4e] font-light tracking-[-0.8px] placeholder:text-[#8b8c94] outline-none focus:border-[#768c5e] transition-colors lg:min-h-[154px] lg:leading-[34px] lg:tracking-[-0.96px]"
                           />
                         </div>
