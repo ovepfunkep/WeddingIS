@@ -54,6 +54,13 @@ html {
   scroll-behavior: smooth;
 }
 
+/* iOS / Android: плавный скролл на html конфликтует с тач-инерцией — «дёргается», первый свайп не срабатывает */
+@media (max-width: 1023px) {
+  html {
+    scroll-behavior: auto;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
