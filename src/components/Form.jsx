@@ -4,6 +4,7 @@ import { asset } from '../utils/assets';
 import { RSVP_FORM_INITIAL } from '../constants/rsvpFormInitial';
 import { loadPersistedRsvp, savePersistedRsvp } from '../utils/rsvpLocalStorage';
 import { isGoogleRsvpConfigured, submitRsvpToGoogle } from '../utils/rsvpGoogle';
+import { EASE, VIEWPORT } from '../motionPresets';
 
 function FieldHint({ children, id }) {
   if (!children) return null;
@@ -115,6 +116,7 @@ export default function Form() {
   const [submitAttempted, setSubmitAttempted] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState('');
+  const reduceMotion = useReducedMotion();
 
   const set = (key) => (val) => setForm((p) => ({ ...p, [key]: val }));
   const setInput = (key) => (e) => setForm((p) => ({ ...p, [key]: e.target.value }));
