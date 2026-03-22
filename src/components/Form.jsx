@@ -1,4 +1,5 @@
 import { useState, useRef, useLayoutEffect, useEffect, useId, useMemo } from 'react';
+import { createPortal } from 'react-dom';
 import { motion, useReducedMotion } from 'framer-motion';
 import { asset } from '../utils/assets';
 import { RSVP_FORM_INITIAL } from '../constants/rsvpFormInitial';
@@ -108,6 +109,29 @@ function CheckboxGroup({ values, onChange, options, hasError, hint, hintId }) {
 
 function Divider() {
   return <div className="w-full h-px bg-[#d1cfd7]/60" />;
+}
+
+/** Контент тултипа «трансфер» — общий для десктопа и мобилки (мобилка рендерится в портале). */
+function TransferTooltipBubble({ contentRef, arrowRef, arrowDesktop }) {
+  return (
+    <div className="relative w-full overflow-visible lg:w-[240px]">
+      <div
+        ref={contentRef}
+        className="w-full min-w-0 rounded-[12px] bg-[#514e4e] px-[16px] py-[12px] text-center text-[14px] leading-[1.4] text-white shadow-lg"
+      >
+        Организованная доставка гостей от&nbsp;города до&nbsp;площадки и&nbsp;обратно
+      </div>
+      <div
+        ref={arrowRef}
+        className={
+          arrowDesktop
+            ? 'absolute z-10 h-2 w-2 shrink-0 rotate-45 bg-[#514e4e] lg:bottom-[-4px] lg:left-1/2 lg:top-auto lg:-translate-x-1/2'
+            : 'absolute z-10 h-2 w-2 shrink-0 rotate-45 bg-[#514e4e]'
+        }
+        aria-hidden
+      />
+    </div>
+  );
 }
 
 export default function Form() {
@@ -224,7 +248,10 @@ export default function Form() {
     const t = window.setTimeout(() => setTransferTooltipOpen(false), 5000);
     const onOutside = (e) => {
       const root = transferTooltipRef.current;
-      if (root && !root.contains(e.target)) setTransferTooltipOpen(false);
+      const panel = transferTooltipPanelRef.current;
+      const t = e.target;
+      if (root?.contains(t) || panel?.contains(t)) return;
+      setTransferTooltipOpen(false);
     };
     document.addEventListener('mousedown', onOutside);
     document.addEventListener('touchstart', onOutside, { passive: true });
@@ -234,6 +261,16 @@ export default function Form() {
       document.removeEventListener('touchstart', onOutside);
     };
   }, [transferTooltipOpen]);
+
+  /** С широкого экрана мобильный тултип скрываем (портал + состояние «открыто»). */
+  useEffect(() => {
+    const mq = window.matchMedia('(max-width: 1023px)');
+    const onChange = () => {
+      if (!mq.matches) setTransferTooltipOpen(false);
+    };
+    mq.addEventListener('change', onChange);
+    return () => mq.removeEventListener('change', onChange);
+  }, []);
 
   const resetTransferTooltipPanelStyle = () => {
     const panel = transferTooltipPanelRef.current;
@@ -280,8 +317,9 @@ export default function Form() {
 
       const pad = 16;
       const gap = 8;
-      const vw = window.innerWidth;
-      const vh = window.innerHeight;
+      const vv = window.visualViewport;
+      const vw = vv?.width ?? window.innerWidth;
+      const vh = vv?.height ?? window.innerHeight;
       const maxW = Math.min(240, vw - pad * 2);
       const btnR = btn.getBoundingClientRect();
 
@@ -351,9 +389,16 @@ export default function Form() {
     });
     window.addEventListener('resize', positionMobile);
     window.addEventListener('scroll', positionMobile, { capture: true, passive: true });
+    const vv = window.visualViewport;
+    if (vv) {
+      vv.addEventListener('resize', positionMobile);
+      vv.addEventListener('scroll', positionMobile, { passive: true });
+    }
     return () => {
       window.removeEventListener('resize', positionMobile);
       window.removeEventListener('scroll', positionMobile, { capture: true });
+      vv?.removeEventListener('resize', positionMobile);
+      vv?.removeEventListener('scroll', positionMobile);
       resetTransferTooltipPanelStyle();
     };
   }, [transferTooltipOpen]);
@@ -659,26 +704,34 @@ export default function Form() {
                                   </defs>
                                 </svg>
                               </button>
+                              {/*
+                                Десктоп: тултип в потоке (hover). Мобилка — createPortal в body: иначе position:fixed
+                                считается относительно предка с transform (motion.form), и координаты ломаются в Safari.
+                              */}
                               <div
-                                ref={transferTooltipPanelRef}
-                                className={`pointer-events-none z-50 hidden max-w-[min(240px,calc(100vw-32px))] lg:absolute lg:bottom-full lg:left-1/2 lg:mb-[8px] lg:-translate-x-1/2 lg:group-hover:block ${transferTooltipOpen ? 'max-lg:fixed max-lg:block' : 'max-lg:hidden'}`}
+                                className="pointer-events-none z-50 hidden max-w-[min(240px,calc(100vw-32px))] max-lg:hidden lg:absolute lg:bottom-full lg:left-1/2 lg:mb-[8px] lg:-translate-x-1/2 lg:group-hover:block"
                                 role="tooltip"
                               >
-                                <div className="relative w-full overflow-visible lg:w-[240px]">
-                                  <div
-                                    ref={transferTooltipContentRef}
-                                    className="w-full min-w-0 rounded-[12px] bg-[#514e4e] px-[16px] py-[12px] text-center text-[14px] leading-[1.4] text-white shadow-lg"
-                                  >
-                                    Организованная доставка гостей от&nbsp;города до&nbsp;площадки и&nbsp;обратно
-                                  </div>
-                                  <div
-                                    ref={transferTooltipArrowRef}
-                                    className="absolute z-10 h-2 w-2 shrink-0 rotate-45 bg-[#514e4e] lg:bottom-[-4px] lg:left-1/2 lg:top-auto lg:-translate-x-1/2"
-                                    aria-hidden
-                                  />
-                                </div>
+                                <TransferTooltipBubble arrowDesktop />
                               </div>
                             </div>
+                            {transferTooltipOpen &&
+                              typeof document !== 'undefined' &&
+                              typeof window !== 'undefined' &&
+                              window.matchMedia('(max-width: 1023px)').matches &&
+                              createPortal(
+                                <div
+                                  ref={transferTooltipPanelRef}
+                                  className="pointer-events-none fixed z-[9999] block max-w-[min(240px,calc(100vw-32px))]"
+                                  role="tooltip"
+                                >
+                                  <TransferTooltipBubble
+                                    contentRef={transferTooltipContentRef}
+                                    arrowRef={transferTooltipArrowRef}
+                                  />
+                                </div>,
+                                document.body
+                              )}
                           </div>
                           <RadioGroup
                             name="transfer"
