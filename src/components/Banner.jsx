@@ -17,19 +17,17 @@ export default function Banner() {
           <img
             src={asset('Block1_Pendant.png')}
             alt=""
-            className="pointer-events-none absolute left-[-42px] top-[-58px] z-30 h-72 w-72 origin-top-left rotate-[7.09deg] object-contain drop-shadow-lg md:h-80 md:w-80 lg:left-[98px] lg:top-[-78px] lg:h-[420px] lg:w-[420px]"
+            className="pointer-events-none absolute left-[-42px] top-[-58px] z-30 h-72 w-72 origin-top-left rotate-[7.09deg] object-contain drop-shadow-lg md:h-80 md:w-80 md:left-[calc(50%-min(550px,50%)-40px)] lg:top-[-78px] lg:h-[420px] lg:w-[420px]"
           />
 
           {/* Polaroid — mobile: позиция по макету; наклон уменьшен — в PNG уже есть угол кадра */}
-          <div className="pointer-events-none absolute left-[197px] top-[560px] z-30 md:left-auto md:right-0 md:top-auto md:bottom-[10px] lg:left-[1032px] lg:right-auto">
+          <div className="pointer-events-none absolute left-[197px] top-[560px] z-30 md:left-[calc(50%+min(250px,50%)+40px)] md:right-0 md:top-auto md:bottom-[10px] lg:right-auto">
             <div className="flex h-[218px] w-[193px] items-center justify-center md:h-auto md:w-auto md:justify-end">
-              <div className="rotate-[5deg] md:rotate-0">
-                <img
-                  src={asset('Block1_Polaroid.png')}
-                  alt=""
-                  className="h-[217px] w-[192px] object-contain md:h-auto md:w-[220px] lg:w-[330px]"
-                />
-              </div>
+              <img
+                src={asset('Block1_Polaroid.png')}
+                alt=""
+                className="h-[217px] w-[192px] object-contain md:h-auto md:w-[220px] lg:w-[330px]"
+              />
             </div>
           </div>
 
